@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Somnews AI Pro</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: radial-gradient(circle at top, #0b1220, #050814);
+        color: white;
+    }
+
+    header {
+        text-align: center;
+        padding: 20px;
+        font-size: 28px;
+        font-weight: bold;
+        letter-spacing: 2px;
+    }
+
+    .subtitle {
+        font-size: 12px;
+        color: #93c5fd;
+        margin-top: 5px;
+    }
+
+    .container {
+        display: grid;
+        grid-template-columns: 1.3fr 1fr 1fr;
+        gap: 16px;
+        padding: 16px;
+    }
+
+    .card {
+        background: rgba(17, 24, 39, 0.75);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        padding: 14px;
+        height: 75vh;
+        overflow-y: auto;
+    }
+
+    h2 {
+        font-size: 16px;
+        border-bottom: 1px solid #374151;
+        padding-bottom: 8px;
+    }
+
+    .item {
+        background: rgba(0,0,0,0.25);
+        padding: 10px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+    .item:hover {
+        background: rgba(255,255,255,0.05);
+    }
+
+    a {
+        color: #60a5fa;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .meta {
+        font-size: 11px;
+        color: #9ca3af;
+        margin-top: 5px;
+    }
+
+    footer {
+        text-align: center;
+        padding: 10px;
+        font-size: 11px;
+        color: #6b7280;
+    }
+</style>
+</head>
+
+<body>
+
+<header>
+    🌍 SOMNEWS AI PRO
+    <div class="subtitle">World news • sports • economy dashboard</div>
+</header>
+
+<div class="container">
+
+    <!-- NEWS -->
+    <div class="card">
+        <h2>📰 Global News</h2>
+        <div id="news">Loading news...</div>
+    </div>
+
+    <!-- SPORTS -->
+    <div class="card">
+        <h2>⚽ Sports</h2>
+        <div class="item">Sports system ready (API slot open)</div>
+        <div class="item">Football • NBA • UFC • Tennis</div>
+    </div>
+
+    <!-- ECONOMY -->
+    <div class="card">
+        <h2>💰 Economy</h2>
+        <div id="economy">Loading economy...</div>
+    </div>
+
+</div>
+
+<footer>
+    © 2026 Somnews AI Pro
+</footer>
+
+<script>
+
+// ---------------- NEWS ----------------
+async function loadNews() {
+    try {
+        const res = await fetch("https://hn.algolia.com/api/v1/search?query=world&tags=story");
+        const data = await res.json();
+
+        let html = "";
+
+        data.hits.slice(0, 12).forEach(n => {
+            html += `
+                <div class="item">
+                    <a href="${n.url}" target="_blank">${n.title}</a>
+                    <div class="meta">⭐ ${n.points || 0} points</div>
+                </div>
+            `;
+        });
+
+        document.getElementById("news").innerHTML = html;
+    } catch (e) {
+        document.getElementById("news").innerHTML = "Failed to load news.";
+    }
+}
+
+// ---------------- ECONOMY ----------------
+async function loadEconomy() {
+    try {
+        const res = await fetch("https://api.exchangerate.host/latest?base=USD");
+        const data = await res.json();
+
+        const rates = data.rates;
+        const list = ["EUR", "GBP", "JPY", "ISK"];
+
+        let html = "";
+
+        list.forEach(c => {
+            html += `
+                <div class="item">
+                    1 USD = ${rates[c]} ${c}
+                </div>
+            `;
+        });
+
+        document.getElementById("economy").innerHTML = html;
+    } catch (e) {
+        document.getElementById("economy").innerHTML = "Failed to load rates.";
+    }
+}
+
+loadNews();
+loadEconomy();
+
+</script>
+
+</body>
+</html>
